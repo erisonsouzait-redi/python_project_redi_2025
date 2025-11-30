@@ -1,273 +1,248 @@
 import tkinter as tk
-from tkinter import ttk
-import game_class
+from game_data import GameData
 
-class MainMenu(tk.Frame):
+#This GUI is configured to change frames according to the button presses from the player
+#For each menu a frame will be created by a function and will receive his respective widgets, buttons + labels
+#For each frame a function a function will be definede in order to change the frames dinamically
 
-    """This class creates the initial menu to choose the type of game"""
+#this GUI was created following the tutorial "Creating Multiple Frames in Tkinter" avaiable at https://www.youtube.com/watch?v=SDNoklJcb30
+#and "Create Graphical User Interfaces With Python And TKinter" avaible at https://www.youtube.com/watch?v=yQSEXcf6s2I&list=PLCC34OHNcOtoC6GglhF3ncJ5rLwQrLGnV
 
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        self.controller = controller
+#This global variable will control which frame is the active frame
+global current_frame
 
-        #Top Labels
-        self.welcome_label = tk.Label(self, text="Welcome to the Der Die Das Spiel!", font=('Arial', 18))
-        self.welcome_label.grid(row=0, column=0, columnspan=1, pady=10)
 
-        self.choose_label = tk.Label(self, text="Choose your type of game", font=('Arial', 18))
-        self.choose_label.grid(row=1, column=0, columnspan=1, pady=10)
+#the following functions will display each frame for each menu and the game
+#the hide the current frame and the intended frame is showin, which in turns becomes the current frame
+def show_main_menu():
+    """This function shows the main menu where the game modes are displayed"""
 
-        #Buttons
-        self.random_noun = tk.Button(self, text="Random Nouns", font=('Arial', 16), command=lambda: controller.show_frame(RandomMenu))
-        self.random_noun.grid(row=2, column=0, columnspan=1, pady=5)
+    global current_frame 
+    current_frame.pack_forget()
+    main_menu.pack()
+    current_frame = main_menu 
 
-        self.by_endings = tk.Button(self, text="Nouns by endings", font=('Arial', 16), command=lambda: controller.show_frame(EndingsMenu))
-        self.by_endings.grid(row=4, column=0, columnspan=1, pady=5)
+def show_random_nouns_frame():
+    """This function shows the random game menu where the player chooses 
+    how many random nouns to play"""
 
-        self.by_topic = tk.Button(self, text="Nouns by topic", font=('Arial', 16))
-        self.by_topic.grid(row=6, column=0, columnspan=1, pady=5)
+    global current_frame
+    current_frame.pack_forget()
+    random_nouns_frame.pack()
+    current_frame = random_nouns_frame
 
+def show_suffix_frame():
+    """This function shows the random game menu where the player chooses
+    which suffix to play"""
 
-class RandomMenu(tk.Frame):
+    global current_frame
+    current_frame.pack_forget()
+    suffix_frame.pack()
+    current_frame = suffix_frame
 
-    """This class display the options for quantities of random nouns to be played"""
+def show_game_frame():
+    """This function shows the random game menu where the player plays 
+    the game according to type of game chosen"""
 
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        self.controller = controller
+    global current_frame
+    current_frame.pack_forget()
+    game_frame.pack()
+    current_frame = game_frame
 
-        #Label
-        self.choose_label = tk.Label(self, text="Choose the number of nouns: ", font=('Arial', 18))
-        self.choose_label.grid(row=0, column=0, columnspan=1, pady=10)
+def reset_game_frame():
+    "This function clear all widgets from the game_frame"
 
-        #Buttons
-        self.random_ten = tk.Button(self, text="10", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.random_ten.grid(row=2, column=0, columnspan=1, pady=5)
+    for widget in game_frame.winfo_children():
+        widget.destroy()
 
-        self.random_twenty = tk.Button(self, text="20", font=('Arial', 16), command=lambda: controller.show_frame(MainMenu))
-        self.random_twenty.grid(row=4, column=0, columnspan=1, pady=5)
+#Creation of the main window
+root = tk.Tk()
 
-        self.random_thirty = tk.Button(self, text="30", font=('Arial', 16), command=lambda: controller.show_frame(MainMenu))
-        self.random_thirty.grid(row=6, column=0, columnspan=1, pady=5)
+#Creation of the frames for each screen
+main_menu = tk.Frame(root)
+random_nouns_frame = tk.Frame(root)
+suffix_frame = tk.Frame(root)
+game_frame = tk.Frame(root)
 
-class EndingsMenu(tk.Frame):
+def create_main_menu():
+    """this function creates the main menu where the type of game is chosen"""
 
-    """This class display the screen with the game based on the ending of the nouns"""
+    #Top label: welcoming the player
+    tk.Label(main_menu, text="Welcome to the Der Die Das Game!", font=('Arial', 18)).pack()
 
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        self.controller = controller
+    tk.Label(main_menu, text="Choose your type of game:", font=('Arial', 18)).pack()
 
-        #Label
-        self.choose_label = tk.Label(self, text="Choose the noun ending to train", font=('Arial', 18))
-        self.choose_label.grid(row=0, column=0, columnspan=5, pady=10)
+    #Buttons: choose the type of game
+    tk.Button(main_menu, text="Random Nouns", font=('Arial', 16), command=show_random_nouns_frame).pack()
 
-        #1st row
-        self.ant_button = tk.Button(self, text="-ant", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ant_button.grid(row=1, column=0, padx=2, pady=5, sticky="ew")
+    tk.Button(main_menu, text="Nouns by Suffix", font=('Arial', 16), command=show_suffix_frame).pack()
 
-        self.ast_button = tk.Button(self, text="-ast", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ast_button.grid(row=1, column=1, padx=2, pady=5, sticky="ew")
+    tk.Button(main_menu, text="100 Most Used Nouns", font=('Arial', 16), command=lambda: [create_game_frame('most_used', quantity=100, plays=10), show_game_frame()]).pack()
 
-        self.ich_button = tk.Button(self, text="-ich", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ich_button.grid(row=1, column=2, padx=2, pady=5, sticky="ew")
+    tk.Button(main_menu, text="500 Most Used Nouns", font=('Arial', 16), command=lambda: [create_game_frame('most_used', quantity=500, plays=10), show_game_frame()]).pack()
 
-        self.ig_button = tk.Button(self, text="-ig", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ig_button.grid(row=1, column=3, padx=2, pady=5, sticky="ew")
+    tk.Button(main_menu, text="1000 Most Used Nouns", font=('Arial', 16), command=lambda: [create_game_frame('most_used', quantity=1000, plays=10), show_game_frame()]).pack()
 
-        self.ismus_button = tk.Button(self, text="-ismus", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ismus_button.grid(row=1, column=4, padx=2, pady=5, sticky="ew")
+    tk.Button(main_menu, text="Survive", font=('Arial', 16), command=lambda: [create_game_frame('survive'), show_game_frame()]).pack()
 
-        #2 nd row
-        self.ling_button = tk.Button(self, text="-ling", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ling_button.grid(row=2, column=0, padx=2, pady=5, sticky="ew")
 
-        self.or_button = tk.Button(self, text="-or", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.or_button.grid(row=2, column=1, padx=2, pady=5, sticky="ew")
+def create_random_nouns_frame():
+    """This function creates a frame to choose a quantity of random games to play"""
 
-        self.us_button = tk.Button(self, text="-us", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.us_button.grid(row=2, column=2, padx=2, pady=5, sticky="ew")
+    #Top label: instruction 
+    tk.Label(random_nouns_frame, text="Choose the number of nouns: ", font=('Arial', 18)).pack()
 
-        self.a_button = tk.Button(self, text="-a", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.a_button.grid(row=2, column=3, padx=2, pady=5, sticky="ew")
+    #Buttons: shows quantity of nouns to be played
+    tk.Button(random_nouns_frame, text="10", font=('Arial', 16), command=lambda: [create_game_frame('random', plays=10), show_game_frame()]).pack()
+    
+    tk.Button(random_nouns_frame, text="20", font=('Arial', 16), command=lambda: [create_game_frame('random', plays=20), show_game_frame()]).pack()
 
-        self.anz_button = tk.Button(self, text="-anz", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.anz_button.grid(row=2, column=4, padx=2, pady=5, sticky="ew")
+    tk.Button(random_nouns_frame, text="30", font=('Arial', 16), command=lambda: [create_game_frame('random', plays=30), show_game_frame()]).pack()
 
-        #3rd row
-        self.enz_button = tk.Button(self, text="-enz", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.enz_button.grid(row=3, column=0, padx=2, pady=5, sticky="ew")
-
-        self.ei_button = tk.Button(self, text="-ei", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ei_button.grid(row=3, column=1, padx=2, pady=5, sticky="ew")
-
-        self.ie_button = tk.Button(self, text="-ie", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ie_button.grid(row=3, column=2, padx=2, pady=5, sticky="ew")
-
-        self.heit_button = tk.Button(self, text="-heit", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.heit_button.grid(row=3, column=3, padx=2, pady=5, sticky="ew")
-
-        self.keit_button = tk.Button(self, text="-keit", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.keit_button.grid(row=3, column=4, padx=2, pady=5, sticky="ew")
-
-        #4th row
-        self.ik_button = tk.Button(self, text="-ik", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ik_button.grid(row=4, column=0, padx=2, pady=5, sticky="ew")
-
-        self.sion_button = tk.Button(self, text="-sion", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.sion_button.grid(row=4, column=1, padx=2, pady=5, sticky="ew")
-
-        self.tion_button = tk.Button(self, text="-tion", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.tion_button.grid(row=4, column=2, padx=2, pady=5, sticky="ew")
-
-        self.sis_button = tk.Button(self, text="-sis", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.sis_button.grid(row=4, column=3, padx=2, pady=5, sticky="ew")
-
-        self.tat_button = tk.Button(self, text="-tät", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.tat_button.grid(row=4, column=4, padx=2, pady=5, sticky="ew")
-
-        #5th row
-        self.ung_button = tk.Button(self, text="-ung", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ung_button.grid(row=5, column=0, padx=2, pady=5, sticky="ew")
-
-        self.ur_button = tk.Button(self, text="-ur", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ur_button.grid(row=5, column=1, padx=2, pady=5, sticky="ew")
-
-        self.schaft_button = tk.Button(self, text="-schaft", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.schaft_button.grid(row=5, column=2, padx=2, pady=5, sticky="ew")
-
-        self.chen_button = tk.Button(self, text="-chen", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.chen_button.grid(row=5, column=3, padx=2, pady=5, sticky="ew")
-
-        self.lein_button = tk.Button(self, text="-lein", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.lein_button.grid(row=5, column=4, padx=2, pady=5, sticky="ew")
-
-        #6th row
-        self.icht_button = tk.Button(self, text="-icht", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.icht_button.grid(row=6, column=0, padx=2, pady=5, sticky="ew")
-
-        self.il_button = tk.Button(self, text="-il", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.il_button.grid(row=6, column=1, padx=2, pady=5, sticky="ew")
-
-        self.it_button = tk.Button(self, text="-it", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.it_button.grid(row=6, column=2, padx=2, pady=5, sticky="ew")
-
-        self.ma_button = tk.Button(self, text="-ma", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ma_button.grid(row=6, column=3, padx=2, pady=5, sticky="ew")
-
-        self.ment_button = tk.Button(self, text="-ment", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.ment_button.grid(row=6, column=4, padx=2, pady=5, sticky="ew")
-
-        #7th row
-        self.tel_button = tk.Button(self, text="-tel", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.tel_button.grid(row=7, column=0, padx=2, pady=5, sticky="ew")
-
-        self.tum_button = tk.Button(self, text="-tum", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.tum_button.grid(row=7, column=1, padx=2, pady=5, sticky="ew")
-
-        self.um_button = tk.Button(self, text="-um", font=('Arial', 16), command=lambda: controller.show_frame(BaseGame))
-        self.um_button.grid(row=7, column=2, padx=2, pady=5, sticky="ew")
-
-
-
-
-class BaseGame(tk.Frame):
-
-    """This class show the screen to play a game of random nouns"""
-
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        self.controller = controller
-
-        self.random_game = game_class.Game()
-        self.nouns_list = self.random_game.random_nouns()
-        self.current_index = 0
-
-        #Top Label
-        self.choose_label = tk.Label(self, text="Choose the correct article to the following noun in the Nominativ: ", font=('Arial', 18))
-        self.choose_label.grid(row=0, column=0, columnspan=1, pady=10)
-        
-        #this label shows the current noun to be tested
-        self.noun_label = tk.Label(self, text=self.nouns_list[0][1], font=('Arial', 18))
-        self.noun_label.grid(row=2, column=0, columnspan=1, pady=10)
-
-        #Buttons
-        self.der_button = tk.Button(self, text="Der", font=('Arial', 16), command=lambda: self.button_click("Der"))
-        self.der_button.grid(row=4, column=0, columnspan=1, pady=5)
-
-        self.die_button = tk.Button(self, text="Die", font=('Arial', 16), command=lambda: self.button_click("Die"))
-        self.die_button.grid(row=6, column=0, columnspan=1, pady=5)
-
-        self.das_button = tk.Button(self, text="Das", font=('Arial', 16), command=lambda: self.button_click("Das"))
-        self.das_button.grid(row=8, column=0, columnspan=1, pady=5)
-        
-        #Bottom Label
-        self.result_label = tk.Label(self, text="", font=('Arial', 18))
-        self.result_label.grid(row=10, column=0, columnspan=1, pady=10)
-
-    def button_click(self, response):
-
-        """Checks the anwer and proceeds to the next noun on the list"""
-
-        current_noun = self.nouns_list[self.current_index]
-        
-        #check if the answer matches the article of the noun
-        if response == current_noun[0]:
-            self.result_label.config(text="That's Correct!", fg="green")
-            #points logics here
+    tk.Button(random_nouns_frame, text="40", font=('Arial', 16), command=lambda: [create_game_frame('random', plays=40), show_game_frame()]).pack()
+
+    tk.Button(random_nouns_frame, text="50", font=('Arial', 16), command=lambda: [create_game_frame('random', plays=50), show_game_frame()]).pack()
+
+
+def create_suffix_frame():
+    """This function creates a frame to choose which word suffix to play"""
+
+    #Top label: instructs the player to choose
+    tk.Label(suffix_frame, text="Choose the suffix to play:", font=('Arial', 18)).pack(pady=10)
+
+    #Creation of subframes to organise the suffixes
+    row1 = tk.Frame(suffix_frame)
+    row1.pack(fill='x')
+    row2 = tk.Frame(suffix_frame)
+    row2.pack(fill='x')
+    row3 = tk.Frame(suffix_frame)
+    row3.pack(fill='x')
+
+    #1st row: 5 buttons
+    tk.Button(row1, text="-a", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='a'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row1, text="-ant", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='ant'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row1, text="-anz", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='anz'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row1, text="-ast", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='ast'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row1, text="-chen", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='chen'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    
+
+    #2nd row: 5 buttons
+    tk.Button(row2, text="-ei", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='ei'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row2, text="-ich", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='ich'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row2, text="-icht", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='icht'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row2, text="-il", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='il'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row2, text="-ma", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='ma'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+
+    #3rd row: 5 buttons
+    tk.Button(row3, text="-or", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='or'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row3, text="-tel", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='tel'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row3, text="-um", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='um'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row3, text="-ur", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='ur'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    tk.Button(row3, text="-us", font=('Arial', 16), command=lambda: [create_game_frame('suffix', plays=10, suffix='us'), show_game_frame()]).pack(side='left', expand=True, fill='x', padx=2, pady=5)
+    
+game_data = GameData()
+
+#game frame 
+def create_game_frame(game_mode= str, **kwargs):
+    """This function creates the frame for the game to be played and controls the 
+    progress of the game according with the type of game"""
+
+    current_index = 0 
+    streak = 0 
+
+    #creation of the list of nouns according to the type of game
+    nouns_list = game_data.create_game_nouns_list(game_mode, plays= kwargs.get('plays'), suffix= kwargs.get('suffix'))
+
+    current_noun = nouns_list[current_index]
+    
+    #Top Label: instruction to the player
+    tk.Label(game_frame, text="Nominativ: Choose the correct article: ", font=('Arial', 18)).pack()
+    
+    noun_label = tk.Label(game_frame, text=current_noun[1], font=('Arial', 18))
+    noun_label.pack()
+
+    def disable_buttons():
+        """This function disable all buttons"""
+        der_button.config(state='disabled')
+        die_button.config(state='disabled')
+        das_button.config(state='disabled')
+        hint_button.config(state='disabled')
+    
+    #nested function to check if the answer matches the article of the noun
+    def button_click(response):
+        """This function to check the player's answer after pressing Der, Die or Das Button and advances the game"""
+        nonlocal current_index, current_noun, streak
+
+        if response == game_data.convert_genus_to_article(current_noun[0]): #(e.g. 'Das' == 'Das' ??)
+            result_label.config(text="That's Correct!", fg="green")
+            hint_label.config(text="")
+            streak += 1
+            if game_mode == 'survive':
+                streak_label.config(text=f'Streak: {streak}')
         else:
-            self.result_label.config(text="That's wrong...!", fg="red")
-            #points logic here
+            result_label.config(text=f"Wrong... The correct article is: {game_data.convert_genus_to_article(current_noun[0])}", fg="red")
+            hint_label.config(text="")
+            if game_mode == 'survive':
+                #Player did not survive...
+                noun_label.config(text="")
+                result_label.config(text="Game Over", fg="blue")
+                streak_label.config(text=f'Streak {streak}')
+                hint_label.config(text="")
+                disable_buttons()
         
-        #Goes to the next noun on the list
-        self.current_index += 1
+        #increses to proceed to the next noun
+        current_index += 1
         
         #check if there are more nouns and update with the next noun
-        if self.current_index < len(self.nouns_list):
-            next_noun = self.nouns_list[self.current_index][1]
-            self.noun_label.config(text=next_noun)
+        if current_index < len(nouns_list):
+            current_noun = nouns_list[current_index]
+            noun_label.config(text=current_noun[1])
         else:
-            #List of nouns is finished
-            self.noun_label.config(text="Game Complete!")
-            self.result_label.config(text="Well done! You finished all nouns.", fg="blue")
-            #Disable buttons
-            self.der_button.config(state='disabled')
-            self.die_button.config(state='disabled')
-            self.das_button.config(state='disabled')
+            #List of nouns is finishedc
+            streak_label.config(text=f'{game_data.generate_game_conclusion_message(streak, nouns_list)} Result: {streak}/{len(nouns_list)}', fg="blue")
+            
+            disable_buttons()
 
-class GameGUI(tk.Tk):
+    #Buttons: all buttons call the nested function button_click, passing Der, Die or Das as a response
+    der_button = tk.Button(game_frame, text="Der", font=('Arial', 16), command=lambda: button_click("Der"))
+    der_button.pack()
 
-    """This class receives all the other screens to navigate on all other menu screens"""
+    die_button = tk.Button(game_frame, text="Die", font=('Arial', 16), command=lambda: button_click("Die"))
+    die_button.pack()
 
-    def __init__(self):
-        super().__init__()
-        self.title("Der Die Das Spiel")
-        self.geometry("500x500")
+    das_button = tk.Button(game_frame, text="Das", font=('Arial', 16), command=lambda: button_click("Das"))
+    das_button.pack()
 
-        #Container for all screens
-        container = ttk.Frame(self)
-        container.pack(fill="both", expand=True)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+    #Bottom Label: used as a way to show the player if the answer is correct or wrong
+    result_label = tk.Label(game_frame, text="", font=('Arial', 18))
+    result_label.pack()
 
-        # Dictionary to hold all the frames
-        self.frames = {}
+    streak_label = tk.Label(game_frame, text="", font=('Arial', 18))
+    streak_label.pack()
 
-        #Create all screens
-        for F in (MainMenu, RandomMenu, BaseGame, EndingsMenu):
-            frame = F(container, self)
-            self.frames[F] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
-        
-        self.show_frame(MainMenu)
-    
-    #This function shows a specific frame
-    def show_frame(self, frame_class):
-        frame = self.frames[frame_class]
-        frame.tkraise()
+    def hint_button_click():
+        """This function gives the player a text hint to help the player decide wich answer to choose"""
 
+        hint_label.configure(text=game_data.provide_hint(current_noun[1]))
 
-# Initiate the Game
-if __name__ == "__main__":
-    game = GameGUI()
-    game.mainloop()
+    hint_button = tk.Button(game_frame, text="Hint", font=('Arial', 16), command=hint_button_click)
+    hint_button.pack()
+
+    hint_label = tk.Label(game_frame, text="", font=('Arial', 12))
+    hint_label.pack()
+
+    back_button = tk.Button(game_frame, text="Main Menu", font=('Arial', 16), command=lambda: [show_main_menu(), reset_game_frame()])
+    back_button.pack()
+
+#initiate the GUI
+current_frame = main_menu
+create_main_menu()
+create_random_nouns_frame()
+create_suffix_frame()
+
+main_menu.pack()
+
+root.wm_maxsize(500,500)
+root.wm_minsize(500,500)
+root.title("Der Die Das Game")
+root.mainloop()
