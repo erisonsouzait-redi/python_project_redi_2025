@@ -51,7 +51,7 @@ On the main screen, you can choose from the following game types:
 - Random nouns from 90,000+ Wiktionary.org entries
 - Goal: achieve the highest streak of correct answers
 - Game ends after a single mistake
-- Beyond C2 level - for experts and academics
+- Expert difficulty
 
 ## Other Features
 
